@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deterministic Multi-Model Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">◇</div>
+        <div>
+          <h1>Multi-Model Observatory</h1>
+          <p class="brand-sub">Evaluate · Route · Learn · Self-correct</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <label class="toggle" title="When off, every query calls all 4 models">
+          <input type="checkbox" id="routingToggle" checked />
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          <span class="toggle-label">Adaptive routing</span>
+        </label>
+        <label class="toggle" title="Judge answers against requirements and auto-retry">
+          <input type="checkbox" id="selfCorrectionToggle" checked />
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          <span class="toggle-label">Self-correction</span>
+        </label>
+        <button id="refreshRoutingBtn" class="btn btn-ghost btn-sm">Refresh</button>
+      </div>
+    </header>
+
+    <!-- Showcase zone: all controls + features visible without scrolling -->
+    <section class="showcase-zone">
+      <div class="showcase-inner">
+        <div class="query-bar">
+          <textarea id="queryInput" rows="2" placeholder="Ask a question — e.g. What is the boiling point of benzene?"></textarea>
+          <div class="query-actions">
+            <button id="runBtn" class="btn btn-primary">Run query</button>
+            <button id="reportBtn" class="btn btn-secondary btn-sm">Report</button>
+          </div>
+        </div>
+        <p id="status" class="status status-inline" aria-live="polite"></p>
+
+        <div class="feature-strip">
+          <div class="feature-card">
+            <h3>Execution</h3>
+            <div id="modeBadge" class="mode-badge mode-idle mode-badge-compact">Idle</div>
+            <ul class="mode-legend mode-legend-inline">
+              <li><span class="dot dot-explore"></span> Explore · 12 calls</li>
+              <li><span class="dot dot-direct"></span> Direct · 3 calls</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <h3>Routing readiness</h3>
+            <div id="seedStatus" class="seed-status seed-compact">Checking…</div>
+            <div class="row row-tight">
+              <button id="seedBootstrapBtn" class="btn btn-secondary btn-sm">Bootstrap</button>
+              <button id="seedVerifyBtn" class="btn btn-ghost btn-sm">Verify</button>
+            </div>
+          </div>
+
+          <div class="feature-card feature-card-wide">
+            <div class="feature-card-head">
+              <h3>Routing clusters</h3>
+              <button id="forceReexploreAllBtn" class="btn btn-ghost btn-sm">Re-explore all</button>
+            </div>
+            <div id="clusterGrid" class="cluster-strip"></div>
+          </div>
+
+          <div class="feature-card">
+            <h3>Domain learning</h3>
+            <div id="reportSummary" class="report-summary report-compact">Loading…</div>
+          </div>
+        </div>
+
+        <details class="requirements-dropdown" id="requirementsDropdown">
+          <summary>Answer requirements (tone, must include, must avoid…)</summary>
+          <div class="requirements-body">
+            <p class="panel-desc">Set once per use-case. The judge checks every response before accepting or retrying.</p>
+            <div class="req-grid">
+              <div>
+                <label class="field-label" for="clientIdInput">Use-case ID</label>
+                <input id="clientIdInput" type="text" value="default" placeholder="default" />
+              </div>
+              <div>
+                <label class="field-label" for="reqTone">Tone &amp; style</label>
+                <input id="reqTone" type="text" placeholder="concise, professional" />
+              </div>
+              <div>
+                <label class="field-label" for="reqDetail">Detail level</label>
+                <input id="reqDetail" type="text" placeholder="brief, medium, in-depth" />
+              </div>
+              <div>
+                <label class="field-label" for="reqFormat">Format</label>
+                <input id="reqFormat" type="text" placeholder="bullet points" />
+              </div>
+              <div>
+                <label class="field-label" for="reqInclude">Must include</label>
+                <textarea id="reqInclude" rows="2" placeholder="examples, step-by-step"></textarea>
+              </div>
+              <div>
+                <label class="field-label" for="reqAvoid">Must avoid</label>
+                <textarea id="reqAvoid" rows="2" placeholder="speculation, hedging"></textarea>
+              </div>
+              <div class="req-full">
+                <label class="field-label" for="reqDomain">Domain constraints</label>
+                <input id="reqDomain" type="text" placeholder="chemistry only, no medical advice" />
+              </div>
+            </div>
+            <div class="row">
+              <button id="saveRequirementsBtn" class="btn btn-secondary btn-sm">Save requirements</button>
+              <button id="loadRequirementsBtn" class="btn btn-ghost btn-sm">Reload</button>
+            </div>
+            <p id="requirementsStatus" class="req-status"></p>
+          </div>
+        </details>
+
+        <div id="emptyState" class="empty-state empty-state-compact">
+          <span class="empty-icon">◎</span>
+          <span>Configure requirements above, then run a query — results appear below.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results zone: scroll down after query completes -->
+    <main id="resultsZone" class="results-zone hidden">
+      <div class="results-divider">
+        <span>Query results</span>
+      </div>
+
+      <section id="winnerSection" class="section hidden">
+        <div class="winner-card winner-card-compact">
+          <div class="winner-meta">
+            <span id="winnerModel" class="chip chip-gold"></span>
+            <span id="winnerPrompt" class="chip"></span>
+            <span id="winnerDomain" class="chip chip-muted"></span>
+          </div>
+          <h2>Best answer</h2>
+          <div id="bestResponse" class="answer-body"></div>
+        </div>
+      </section>
+
+      <section id="selfCorrectionSection" class="section hidden">
+        <div class="section-head">
+          <h2>Self-correction loop</h2>
+          <span id="scOutcomeBadge" class="chip"></span>
+        </div>
+        <div id="scSummary" class="sc-summary"></div>
+        <div id="scAttempts" class="sc-attempts sc-attempts-horizontal"></div>
+      </section>
+
+      <section id="routingSection" class="section hidden">
+        <div class="section-head">
+          <h2>Routing decision</h2>
+          <span id="routingTimestamp" class="muted"></span>
+        </div>
+        <div id="routingFlow" class="routing-flow"></div>
+        <div id="routingDetails" class="routing-details routing-details-row"></div>
+      </section>
+
+      <section id="metricsSection" class="section hidden">
+        <h2>Aggregate metrics</h2>
+        <div id="kpiGrid" class="kpi-grid kpi-grid-row"></div>
+        <div id="blueChart" class="blue-chart"></div>
+      </section>
+
+      <section id="responsesSection" class="section hidden">
+        <div class="section-head">
+          <h2>All model responses</h2>
+          <span id="responseCount" class="muted"></span>
+        </div>
+        <div id="modelGroups" class="model-groups"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="reportModal" class="report-modal hidden" role="dialog" aria-labelledby="reportModalTitle" aria-modal="true">
+    <div class="report-modal-backdrop" id="reportModalBackdrop"></div>
+    <div class="report-modal-panel">
+      <div class="report-modal-head">
+        <div>
+          <h2 id="reportModalTitle">Metrics report</h2>
+          <p class="muted report-modal-sub">Platform learning stats and last query evaluation</p>
+        </div>
+        <button id="closeReportModalBtn" class="btn btn-ghost btn-sm" type="button" aria-label="Close">Close</button>
+      </div>
+      <div id="reportModalBody" class="report-modal-body"></div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+torch
+transformers
+accelerate>=1.1.0
+datasets
+pandas
+fastapi
+uvicorn
+sentencepiece

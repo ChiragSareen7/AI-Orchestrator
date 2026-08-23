@@ -1,0 +1,79 @@
+# OS / Editor
+.DS_Store
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+
+# Virtual environments
+.venv/
+AI_agent/.venv/
+
+# Node
+node_modules/
+deterministic/node_modules/
+Platform/node_modules/
+
+# Environment / secrets
+.env
+.env.*
+*.pem
+*.key
+*.crt
+secrets*.json
+credentials*.json
+
+# Runtime logs / stores
+logs/
+**/logs/
+*.log
+*.jsonl
+
+# Deterministic runtime store artifacts
+deterministic/store/cache/
+deterministic/store/logs.json
+
+# AI agent vector persistence / local DB locks
+AI_agent/vector_store/
+AI_agent/vector_store/qdrant/
+AI_agent/vector_store/faiss_index/
+*.sqlite
+*.faiss
+*.pkl
+*.lock
+
+# Cursor local project state
+.cursor/
+
+# Fine-tuned weights (GitHub max 100 MB per file; use Git LFS or host elsewhere)
+models/*_model/model.safetensors
+**/*_model/model.safetensors
+models_api/*_model/model.safetensors
+models_api/*_model/checkpoints/
+**/*_model/checkpoints/
+**/*_model/optimizer.pt
+**/*_model/*.pt
+**/*_model/*.pth
+**/*_model/training_args.bin
+
+# Platform runtime JSON stores (auto-created on startup; may contain query history)
+platform/store/*.json
+platform/app/store/*.json
+!platform/store/.gitkeep
+!platform/app/store/.gitkeep
+
+# Next.js build output (do not commit)
+AI_agent/frontend/.next/
+nexus/dashboard/.next/
+
+# Python packaging metadata
+*.egg-info/
+nexus/nexus_governance_platform.egg-info/
