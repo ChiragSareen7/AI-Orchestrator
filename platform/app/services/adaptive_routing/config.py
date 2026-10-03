@@ -53,4 +53,4 @@ LLM_CLASSIFIER_ENABLED = os.getenv("ROUTING_LLM_CLASSIFIER_ENABLED", "true").low
     "true",
     "yes",
 }
-LLM_CLASSIFIER_MODEL = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
+LLM_CLASSIFIER_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")

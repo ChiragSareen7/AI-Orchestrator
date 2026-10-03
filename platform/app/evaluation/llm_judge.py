@@ -30,7 +30,7 @@ def default_groq_judge(query: str, response: str, context: str) -> dict[str, Any
     base = os.getenv("EVAL_JUDGE_BASE_URL", os.getenv("GROQ_BASE_URL", "https://api.groq.com/openai/v1"))
     # get the API base URL: check EVAL_JUDGE_BASE_URL first, fall back to GROQ_BASE_URL, then hardcode default
 
-    model = os.getenv("EVAL_JUDGE_MODEL", os.getenv("GROQ_MODEL", "llama-3.1-8b-instant"))
+    model = os.getenv("EVAL_JUDGE_MODEL", os.getenv("GROQ_MODEL", "openai/gpt-oss-20b"))
     # get the model to use for judging — can be a different model from the one answering questions
 
     system = (

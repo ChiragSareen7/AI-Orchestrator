@@ -17,8 +17,8 @@ MODELS_API_BASE_URL = os.getenv("MODELS_API_BASE_URL", "http://127.0.0.1:8010")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 # your Groq API key from console.groq.com — REQUIRED for groq_model calls
 
-GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
-# which Llama model to use on Groq — "llama-3.1-8b-instant" is fast and free
+GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
+# Groq chat model — llama-3.1-8b-instant was retired 2026-08-16; use openai/gpt-oss-20b
 
 GROQ_BASE_URL = os.getenv("GROQ_BASE_URL", "https://api.groq.com/openai/v1")
 # Groq's API follows the OpenAI API format, so we can use it like an OpenAI client
@@ -114,7 +114,7 @@ def _execute_groq(prompt_text: str) -> str:
     }
 
     payload = {
-        "model": GROQ_MODEL,  # e.g. "llama-3.1-8b-instant"
+        "model": GROQ_MODEL,  # e.g. "openai/gpt-oss-20b"
         "messages": [
             {"role": "user", "content": prompt_text}
             # OpenAI-format messages: list of {role, content} dicts

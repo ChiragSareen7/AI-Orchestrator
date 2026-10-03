@@ -6,7 +6,7 @@ import os
 
 # ── Judge ─────────────────────────────────────────────────────────────────────
 JUDGE_PASS_SCORE_THRESHOLD = float(os.getenv("SELF_CORRECTION_JUDGE_PASS_THRESHOLD", "0.75"))
-JUDGE_MODEL = os.getenv("SELF_CORRECTION_JUDGE_MODEL", os.getenv("GROQ_MODEL", "llama-3.1-8b-instant"))
+JUDGE_MODEL = os.getenv("SELF_CORRECTION_JUDGE_MODEL", os.getenv("GROQ_MODEL", "openai/gpt-oss-20b"))
 JUDGE_TIMEOUT_SECONDS = float(os.getenv("SELF_CORRECTION_JUDGE_TIMEOUT", "45"))
 
 # ── Requirements profile ──────────────────────────────────────────────────────

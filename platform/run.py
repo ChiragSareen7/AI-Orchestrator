@@ -1,10 +1,13 @@
 from __future__ import annotations  # allows using newer Python type hints in older Python versions
 
 import os  # lets us read environment variables and interact with the operating system
+from pathlib import Path
+
 from dotenv import load_dotenv  # reads the .env file and loads variables into the environment
 import uvicorn  # uvicorn is the web server that runs our FastAPI app
 
-load_dotenv()  # reads .env file RIGHT NOW before anything else — this is how GROQ_API_KEY etc. get loaded
+ROOT = Path(__file__).resolve().parent
+load_dotenv(ROOT.parent / ".env")  # project root .env (not platform/.env)
 
 if __name__ == "__main__":  # only runs this block if you directly run "python run.py" (not when imported)
 
